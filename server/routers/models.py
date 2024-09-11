@@ -1,4 +1,4 @@
-from fastapi import APIRouter()
+from fastapi import APIRouter
 from pydantic import BaseModel, Field, model_validator
 from enum import Enum
 from typing import Annotated, Literal, Union
@@ -68,15 +68,15 @@ class Model_Out(Model):
     uuid: UUID | None = None
 
 
-router = APIRouter()
+router = APIRouter(prefix="/models", tags=["models"])
 
-@router.get("/models/", tags=["models"])
-async def get_models(model_name: str | None = None) -> list[str] | Model_Out:
-    if not model_name:
+@router.get("/")
+async def get_models(mod_name: str | None = None) -> list[str] | Model_Out:
+    if not mod_name:
         # SQL: SELECT model_name FROM models
         return None # read list of names
 
-@router.post("/models/", tags=["models"])
+@router.post("/")
 async def create_model(model: Model) -> Model_Out:
     # construct pytorch model
 

@@ -1,9 +1,10 @@
-from fastapi import APIRouter()
+from fastapi import APIRouter
 
-router = APIRouter()
+router = APIRouter(prefix="/datasets", tags=["datasets"])
 
-@router.get("/datasets/", tags=["datasets"])
+@router.get("/")
 async def get_datasets() -> list[str]:
-    if not model_name:
+    pass
+    if not mod_name:
         # SQL: SELECT name FROM datasets
         return None # read list of names
