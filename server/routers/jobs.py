@@ -18,10 +18,16 @@ class Job(BaseModel):
     dataset_name: str
     job_status: JobStatus
     start_time: str
+    parameters: JobParameters
+
+class JobParameters(BaseModel):
+    learning_rate: float
+    num_epochs: int
 
 class JobRequest(BaseModel):
     model_id: UUID
     dataset_name: str
+    parameters: JobParameters
 
 
 @router.get("/jobs/", tags=["jobs"])
