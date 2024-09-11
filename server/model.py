@@ -3,48 +3,42 @@
 import torch.nn as nn
 
 test_model = {
+    "input_shape": [28, 28]
     "layers": [
         {
-            "type": "flatten",
+            "layer_type": "Flatten",
             "params": {},
             "activation": None
         },
         {
-            "type": "linear",
-            "params": {
-                "num_nodes": 28*28,
-            },
-            "activation": None
-        },
-        {
-            "type": "linear",
+            "layer_type": "Linear",
             "params": {
                 "num_nodes": 512,
             },
             "activation": "relu"
         },
         {
-            "type": "linear",
+            "layer_type": "Linear",
             "params": {
                 "num_nodes": 512,
             },
             "activation": "relu"
         },
-        {
-            "type": "linear",
-            "params": {
-                "num_nodes": 10,
-            },
-            "activation": None
-        },
+        # {
+        #     "layer_type": "Linear",
+        #     "params": {
+        #         "num_nodes": 10,
+        #     },
+        #     "activation": None
+        # },
     ],
 }
 
-class NeuralNetwork(nn.Module):
+class LinearTestComparison(nn.Module):
     def __init__(self):
         super().__init__()
-        self.flatten = nn.Flatten()
         self.linear_relu_stack = nn.Sequential(
+            nn.Flatten(),
             nn.Linear(28*28, 512),
             nn.ReLU(),
             nn.Linear(512, 512),
@@ -53,7 +47,6 @@ class NeuralNetwork(nn.Module):
         )
 
     def forward(self, x):
-        x = self.flatten(x)
         logits = self.linear_relu_stack(x)
         return logits
 
@@ -75,5 +68,3 @@ def construct_torch_model(json_model: dict):
     
     return nn.Sequential(*pt_layers)
 
-pt_test_model = construct_torch_model(test_model)
-print(pt_test_model)

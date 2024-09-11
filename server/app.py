@@ -1,5 +1,6 @@
-from .schemas import LayerType, Layer, Model
+from .schemas import *
 from fastapi import FastAPI
+from uuid import UUID
 
 fake_database = {"test": {
     "owner": "asdfasdfasd_id",
@@ -17,6 +18,11 @@ fake_database = {"test": {
 }}
 app = FastAPI()
 
-@app.get("/models/{model_id}")
-async def get_model(model_id: str) -> Model:
+@app.get("/models/")
+async def get_model(model_id: UUID | str | None = None) -> Model:
     return fake_database[model_id]
+
+@app.post("/models/", response_model=Model)
+async def create_model(model: Model) -> Model:
+    # construct_torch_model(model)
+    return model

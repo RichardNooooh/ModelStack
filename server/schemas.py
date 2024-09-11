@@ -4,18 +4,24 @@ from enum import Enum
 from typing import Annotated, Literal, Union
 from typing_extensions import Self
 
-class LinearLayer(BaseModel):
+class ActivationType(str, Enum):
+    relu = "ReLU"
+    tanh = "Tanh"
+
+class BaseLayer(BaseModel):
+    activation: ActivationType | None = None
+
+
+class LinearLayer(BaseLayer):
     layer_type: Literal["Linear"]
     size: int
 
     @model_validator(mode='after')
     def check_params(self) -> Self:
-        assert self.size > 0 and self.size < 256, "`size` must be between 1 and 255, inclusive."
-        # assert self.type == LayerType.linear, "`size` should only be used for LinearLayers"
+        assert self.size > 0 and self.size <= 1024, "`size` must be between 1 and 1024, inclusive."
         return self
 
-
-class DropoutLayer(BaseModel):
+class DropoutLayer(BaseLayer):
     layer_type: Literal["Dropout"]
     dropout_prob: float = 0.5
 
@@ -29,7 +35,7 @@ class DropoutLayer(BaseModel):
         #     ), "`dropout_prob` should only be used for DropoutLayers"
         return self
 
-class Conv2DLayer(BaseModel):
+class Conv2DLayer(BaseLayer):
     layer_type: Literal["Conv2d"]
     num_channels: int
     kernel: int | None = 3
@@ -42,10 +48,15 @@ class Conv2DLayer(BaseModel):
                 "`kernel` must be in [1, 3]"
         return self
 
+class Flatten(BaseLayer):
+    layer_type: Literal["Flatten"]
+
 Layer = Annotated[
-            Union[LinearLayer, DropoutLayer, Conv2DLayer],
+            Union[LinearLayer, DropoutLayer, Conv2DLayer, Flatten],
             Field(discriminator="layer_type")]
 
 class Model(BaseModel):
     name: str
+    input_shape: tuple[int, int] # TODO add future flexibility here.. input vector...
+    output_shape: int
     layers: list[Layer]
