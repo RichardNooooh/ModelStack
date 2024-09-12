@@ -28,5 +28,5 @@ class PredictionResponse(BaseModel):
 router = APIRouter(prefix="/predictions", tags=["predictions"])
 
 @router.post("/")
-async def load_predictions(data: PredictionRequest = Body(...), files: list[UploadFile] = File(...)) -> PredictionResponse:
+async def get_predictions(data: PredictionRequest = Body(...), files: list[UploadFile] = File(...)) -> PredictionResponse:
     return {"JSON Payload": data, "Filenames": [file.filename for file in files]}

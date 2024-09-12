@@ -157,7 +157,7 @@ async def create_model(model: Model, db: Session = Depends(get_database)) -> Mod
     
     # upload pytorch model to cloud storage
     # TODO upload into docker storage? how would that work?
-    file_location = f"{model.name}.pt"
+    file_location = f"../storage/models/{model.name}.pt"
     jit.save(scripted_module, file_location) # temporary local storage
     
     # record model in database
