@@ -1,11 +1,9 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field, model_validator
 from enum import Enum
 from typing import Annotated, Literal, Union
 from typing_extensions import Self
 from uuid import UUID
-
-import torch.nn as nn
 
 class ActivationType(str, Enum):
     relu = "ReLU"
@@ -64,20 +62,39 @@ class Model(BaseModel):
     output_shape: int
     layers: list[Layer]
 
-class Model_Out(Model):
-    uuid: UUID | None = None
 
+class Model_Out(BaseModel):
+    id: UUID
+    model: Model
+    is_trained: bool
+
+    class Config:
+        orm_mode = True
+
+
+from ..database.database import get_database
+from ..database.crud_models import get_all_models, get_model
+from fastapi import Depends
+from sqlalchemy.orm import Session
+
+import torch.nn as nn
 
 router = APIRouter(prefix="/models", tags=["models"])
 
 @router.get("/")
-async def get_models(mod_name: str | None = None) -> list[str] | Model_Out:
-    if not mod_name:
-        # SQL: SELECT model_name FROM models
-        return None # read list of names
+async def get_models(mod_name: str | None = None, db: Session = Depends(get_database)) -> Model_Out | list[Model_Out]:
+    if mod_name:
+        result = get_model(mod_name, db)
+        if result:
+            return result
+        
+        raise HTTPException(status_code=404, detail="Model name not found") 
+
+    return get_all_models(db)
+
 
 @router.post("/")
-async def create_model(model: Model) -> Model_Out:
+async def create_model(model: Model, db: Session = Depends(get_database)) -> Model_Out:
     # construct pytorch model
 
     # upload pytorch model to cloud storage
