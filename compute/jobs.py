@@ -32,12 +32,12 @@ class Job:
     def updateStatus(self, new_status: JobStatus):
         self.status = new_status
 
-        Job.db.execute(
+        self.db.execute(
             update(DB_Job).
             where(DB_Job.job_id == self.id).
             values(job_status=new_status)
         )
-        Job.db.commit()
+        self.db.commit()
 
 class JobEncoder(json.JSONEncoder):
     def default(self, obj):
