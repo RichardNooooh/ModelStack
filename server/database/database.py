@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, URL
+from sqlalchemy import create_engine, URL, Table
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
@@ -28,3 +28,12 @@ def get_database():
     db = SessionLocal()
     try:        yield db
     finally:    db.close()
+
+class Job(DB_Base):
+    __table__ = Table('jobs', DB_Base.metadata, autoload_with=engine)
+
+class Model(DB_Base):
+    __table__ = Table('models', DB_Base.metadata, autoload_with=engine)
+
+class Dataset(DB_Base):
+    __table__ = Table('datasets', DB_Base.metadata, autoload_with=engine)

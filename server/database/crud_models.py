@@ -1,10 +1,7 @@
 from sqlalchemy import Table, select, insert
 from sqlalchemy.orm import Session
 
-from .database import DB_Base, engine
-
-class Model(DB_Base):
-    __table__ = Table('models', DB_Base.metadata, autoload_with=engine)
+from .database import DB_Base, engine, Model
 
 def get_all_models(db: Session):
     result = db.execute(
