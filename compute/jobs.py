@@ -16,8 +16,16 @@ class JobStatus(str, Enum):
     ERROR = "error" # unused
 
 class Job:
-    def __init__(self, id: UUID):
+    def __init__(self, id: UUID, model_path: str, 
+                 lr: float, epochs: int, 
+                 data_path: str = "../storage/"):
         self.id = id
+        self.model_path = model_path
+        self.data_path = data_path
+        
+        self.lr = lr
+        self.num_epochs = epochs
+
         self.status = JobStatus.PENDING
         self.db = SessionLocal()
 

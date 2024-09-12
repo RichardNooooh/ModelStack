@@ -10,6 +10,8 @@ from time import sleep
 
 from threading import Thread
 
+from training import begin_training
+
 HOST, PORT = "localhost", 42069
 
 class JobControlHandler(BaseHTTPRequestHandler):
@@ -37,13 +39,19 @@ class JobControlHandler(BaseHTTPRequestHandler):
         message = json.loads(body_data)
         
         # add a property to the object, just to mess with data
-        message['received'] = 'ok'
+        new_job = Job(message["job_id"],
+                        message["model_path"],
+                        message["parameters"]["learning_rate"],
+                        message["parameters"]["num_epochs"])
         JobQueue.lock.acquire()
-        JobQueue.queue.append(Job(uuid.uuid4()))
+        JobQueue.queue.append(new_job)
         JobQueue.lock.release()
+
+        print(f"New job!: {new_job}")
+
         # send the message back
         self._set_headers()
-
+        message['received'] = 'ok'
         return_message = json.dumps(message).encode('utf-8')
         print(return_message)
         self.wfile.write(return_message)
@@ -58,8 +66,18 @@ if __name__ == "__main__":
 
     # we run the job q system indefinitely..
     while True:
+        current_job = None
+
         JobQueue.lock.acquire()
-        print(len(JobQueue.queue))
+        if len(JobQueue.queue) > 0 and not current_job:
+            current_job = JobQueue.queue.popleft()
+        else:
+            print("No job yet.")
         JobQueue.lock.release()
 
+        if current_job:
+            begin_training(current_job)
+            current_job = None
+
         sleep(3.0)
+        
