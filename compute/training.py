@@ -5,7 +5,7 @@ from torchvision import datasets, transforms
 from torch import jit
 import torch.optim as optim
 
-from jobs import Job
+from jobs import Job, JobStatus
 
 from tqdm import tqdm
 
@@ -66,7 +66,7 @@ def begin_training(job: Job):
     train_loader, test_loader = load_data()
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(model.parameters(), lr=job.lr)
-    
+
     evaluate(model, test_loader)
     train(model, criterion, optimizer, job.num_epochs, train_loader, test_loader)
     evaluate(model, test_loader)
@@ -75,4 +75,5 @@ def begin_training(job: Job):
     jit.save(model, job.model_path)
 
     print("finished job.")
+    job.updateStatus(JobStatus.DONE)
 

@@ -47,13 +47,13 @@ class JobControlHandler(BaseHTTPRequestHandler):
         JobQueue.queue.append(new_job)
         JobQueue.lock.release()
 
-        print(f"New job!: {new_job}")
+        print(f"New job!: {new_job.id}")
 
         # send the message back
         self._set_headers()
         message['received'] = 'ok'
         return_message = json.dumps(message).encode('utf-8')
-        print(return_message)
+        # print(return_message)
         self.wfile.write(return_message)
     
 
