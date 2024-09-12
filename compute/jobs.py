@@ -34,7 +34,7 @@ class Job:
 
         self.db.execute(
             update(DB_Job).
-            where(DB_Job.job_id == self.id).
+            where(DB_Job.id == self.id).
             values(job_status=new_status)
         )
         self.db.commit()

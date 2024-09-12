@@ -14,6 +14,8 @@ from training import begin_training
 
 HOST, PORT = "localhost", 42069
 
+# ! This is a quick and dirty solution.
+# TODO: Remove the HTTP request and setup a shell script that spawns a process to train the model
 class JobControlHandler(BaseHTTPRequestHandler):
     def _set_headers(self):
         self.send_response(HTTPStatus.OK.value)
