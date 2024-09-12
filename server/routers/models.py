@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, encoders
 from pydantic import BaseModel, Field, model_validator
 from enum import Enum
 from typing import Annotated, Literal, Union
@@ -73,7 +73,7 @@ class Model_Out(BaseModel):
 
 
 from ..database.database import get_database
-from ..database.crud_models import get_all_models, get_model
+from ..database.crud_models import get_all_models, get_model, post_model
 from fastapi import Depends
 from sqlalchemy.orm import Session
 
@@ -92,7 +92,7 @@ async def get_models(mod_name: str | None = None, db: Session = Depends(get_data
 
 
 from torch import nn, jit
-def construct_pytorch_model(model: Model) -> str:
+def construct_pytorch_model(model: Model):
     pt_layers = []
     current_shape = (model.input_shape[0], model.input_shape[1], 1) # 3rd component is # channels
     for layer in model.layers: 
@@ -145,21 +145,26 @@ def construct_pytorch_model(model: Model) -> str:
         
     pt_model = nn.Sequential(*pt_layers)
     scripted_module = jit.script(pt_model)
-    save_name = f"{model.name}.pt"
-    jit.save(scripted_module, save_name)
-    return save_name
+    return scripted_module
 
 @router.post("/")
-async def create_model(model: Model, db: Session = Depends(get_database)) -> Model:
+async def create_model(model: Model, db: Session = Depends(get_database)) -> Model_Out:
     # construct pytorch model
     try:
-        file_location = construct_pytorch_model(model)
+        scripted_module = construct_pytorch_model(model)
     except Exception as error:
         raise error
+    
     # upload pytorch model to cloud storage
+    # TODO upload into docker storage? how would that work?
+    file_location = f"{model.name}.pt"
+    jit.save(scripted_module, file_location) # temporary local storage
+    
+    # record model in database
+    model_out = post_model(dict(encoders.jsonable_encoder(model)), file_location, db)
 
     # return model
-    return model
+    return model_out
 
 
 

@@ -22,3 +22,11 @@ def get_model(model_name: str, db: Session):
     return result
     
 
+def post_model(model_json, fp: str, db: Session):
+    result = db.execute(
+        insert(Model).values(model=model_json, file_path=fp).
+            returning(Model.id, Model.model, Model.file_path, Model.is_trained),
+    ).first()
+    db.commit()
+
+    return result
