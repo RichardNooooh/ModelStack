@@ -1,28 +1,63 @@
 # import socketserver
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from multiprocessing import Process
+from http import HTTPStatus
+import json
 
-from .jobs import JobQueue
+import uuid
+
+from jobs import JobQueue, JobEncoder, Job
 from time import sleep
+
+from threading import Thread
 
 HOST, PORT = "localhost", 42069
 
 class JobControlHandler(BaseHTTPRequestHandler):
+    def _set_headers(self):
+        self.send_response(HTTPStatus.OK.value)
+        self.send_header('Content-type', 'application/json')
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.end_headers()
+
+    def do_HEAD(self):
+        self._set_headers()
+
     def do_GET(self):
-        pass
+        self._set_headers()
+        JobQueue.lock.acquire()
+        # try:
+        q = [json.dumps(job, cls=JobEncoder) for job in JobQueue.queue]
+        # finally:
+        JobQueue.lock.release()
+
+        self.wfile.write(json.dumps({"queue": q}).encode('utf-8'))
 
     def do_POST(self):
-        pass
+        print("> Entered POST")
+        length = int(self.headers.get('content-length'))
+        message = json.loads(self.rfile.read(length))
+        
+        # add a property to the object, just to mess with data
+        message['received'] = 'ok'
+        print("> About to acquire lock")
+        JobQueue.lock.acquire()
+        print("> Acquired lock")
+        try:
+            JobQueue.queue.append(Job(uuid.uuid4()))
+        finally:
+            JobQueue.lock.release()
+        print("> Released lock")
+        # send the message back
+        self._set_headers()
+        self.wfile.write(json.dumps(message).encode('utf-8'))
     
 
 def run_http_server():
-    with HTTPServer((HOST, PORT), JobControlHandler) as server:
-        server.serve_forever(poll_interval=1.0)
-
+    server = HTTPServer((HOST, PORT), JobControlHandler)
+    server.serve_forever()
 
 if __name__ == "__main__":
-    p = Process(target=run_http_server, daemon=True)
-    p.start()
+    Thread(target=run_http_server, daemon=True).start()
 
     # we run the job q system indefinitely..
     while True:
@@ -32,4 +67,4 @@ if __name__ == "__main__":
         finally:
             JobQueue.lock.release()
 
-        sleep(5.0)
+        sleep(3.0)

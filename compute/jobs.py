@@ -1,11 +1,12 @@
-from .database import SessionLocal, DB_Job
+from database import SessionLocal, DB_Job
 from sqlalchemy import update
 
 from uuid import UUID
 from collections import deque
 from enum import Enum
+import json
 
-from multiprocessing import Lock
+from threading import Lock
 
 class JobStatus(str, Enum):
     PENDING = "pending"
@@ -15,11 +16,10 @@ class JobStatus(str, Enum):
     ERROR = "error" # unused
 
 class Job:
-    db = SessionLocal()
-
     def __init__(self, id: UUID):
         self.id = id
         self.status = JobStatus.PENDING
+        self.db = SessionLocal()
 
     def updateStatus(self, new_status: JobStatus):
         self.status = new_status
@@ -30,6 +30,10 @@ class Job:
             values(job_status=new_status)
         )
         Job.db.commit()
+
+class JobEncoder(json.JSONEncoder):
+    def default(self, obj):
+        return {"id": obj.id, "status": obj.self.status}
     
 class JobQueue:
     queue = deque()
