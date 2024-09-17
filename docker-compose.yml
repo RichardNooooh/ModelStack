@@ -4,10 +4,26 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - db
-    # restart: on-failure
-    # networks:
-    #   - modelstack_network
+      db:
+        condition: service_healthy
+        restart: true
+    volumes:
+      - modelstack_storage:/storage
+      - ./storage:/storage
+
+
+  compute:
+    build: ./compute/
+    tty: true
+    depends_on:
+      db:
+        condition: service_healthy
+        restart: true
+    expose:
+      - 42069
+    volumes:
+      - modelstack_storage:/storage
+      - ./storage:/storage
 
   # https://stackoverflow.com/questions/59715622/docker-compose-and-create-db-in-postgres-on-init
   db:
@@ -21,6 +37,12 @@ services:
     volumes:
       - modelstack_database:/var/lib/postgresql/modelstack_database
       - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
     # networks:
     #   - modelstack_network
 
@@ -31,3 +53,4 @@ services:
 
 volumes:
   modelstack_database:
+  modelstack_storage:
