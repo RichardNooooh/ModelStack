@@ -4,5 +4,5 @@ COPY ./requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
 COPY ./src /app/src
 WORKDIR /app/src
-CMD ["fastapi", "run", "app.py", "--port", "80"]
+CMD ["fastapi", "run", "main.py", "--host", "0.0.0.0", "--port", "8000"]
 # TODO setup environment variables for db

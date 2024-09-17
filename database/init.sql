@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS models
     file_path   VARCHAR(128) NOT NULL
 );
 
-INSERT INTO models (model, file_path) VALUES 
+-- INSERT INTO models (model, file_path) VALUES 
 --     ('{
 --         "name":"fake_model1", 
 --         "input_shape": [28, 28], 

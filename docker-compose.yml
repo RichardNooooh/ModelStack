@@ -1,0 +1,33 @@
+services:
+  server:
+    build: ./server/
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    # restart: on-failure
+    # networks:
+    #   - modelstack_network
+
+  # https://stackoverflow.com/questions/59715622/docker-compose-and-create-db-in-postgres-on-init
+  db:
+    image: postgres:12.20-alpine
+    expose:
+      - 5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: modelstack
+    volumes:
+      - modelstack_database:/var/lib/postgresql/modelstack_database
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    # networks:
+    #   - modelstack_network
+
+
+# networks:
+#   modelstack_network:
+
+
+volumes:
+  modelstack_database:
