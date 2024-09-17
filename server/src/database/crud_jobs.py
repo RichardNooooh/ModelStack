@@ -37,7 +37,7 @@ def create_job(job_req: dict, db: Session):
                            "dataset": job_req["dataset_name"],
                            "parameters": dict(job_req["parameters"])}
     print(compute_requestbody)
-    compute_req = requests.post("http://localhost:42069/", json=compute_requestbody)
+    compute_req = requests.post("http://compute:42069/", json=compute_requestbody)
     if compute_req.status_code != 200:
         raise HTTPException(status_code=404)
     print(compute_req.text)
