@@ -9,7 +9,6 @@ class DatabaseSettings(BaseSettings):
     db_username: str
     db_password: str
     db_host: str
-    db_port: int
 
 DATABASE_SETTINGS = DatabaseSettings()
 SQLALCHEMY_URL = URL.create(
@@ -17,7 +16,6 @@ SQLALCHEMY_URL = URL.create(
     username=DATABASE_SETTINGS.db_username,
     password=DATABASE_SETTINGS.db_password, # TODO put this into an .env file
     host=DATABASE_SETTINGS.db_host,
-    port=DATABASE_SETTINGS.db_port,
     database="modelstack"
 )
 

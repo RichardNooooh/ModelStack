@@ -18,7 +18,7 @@ class JobStatus(str, Enum):
 class Job:
     def __init__(self, id: UUID, model_path: str, 
                  lr: float, epochs: int, 
-                 data_path: str = "../storage/"):
+                 data_path: str = "/storage/"):
         self.id = id
         self.model_path = model_path
         self.data_path = data_path

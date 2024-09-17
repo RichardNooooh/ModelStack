@@ -12,10 +12,10 @@ from threading import Thread
 
 from training import begin_training
 
-HOST, PORT = "localhost", 42069
+HOST, PORT = "0.0.0.0", 42069
 
 # ! This is a quick and dirty solution.
-# TODO: Remove the HTTP request and setup a shell script that spawns a process to train the model
+# TODO: Use `subprocess` or `multiprocessing` module to spawn a new process that runs the job
 class JobControlHandler(BaseHTTPRequestHandler):
     def _set_headers(self):
         self.send_response(HTTPStatus.OK.value)
@@ -61,9 +61,11 @@ class JobControlHandler(BaseHTTPRequestHandler):
 
 def run_http_server():
     server = HTTPServer((HOST, PORT), JobControlHandler)
+    print(f"Serving HTTP requests on {server.server_address}")
     server.serve_forever()
 
 if __name__ == "__main__":
+    print("Started compute server")
     Thread(target=run_http_server, daemon=True).start()
 
     # we run the job q system indefinitely..

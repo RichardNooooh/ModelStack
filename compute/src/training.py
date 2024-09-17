@@ -12,13 +12,13 @@ from tqdm import tqdm
 # TODO generalize
 # TODO clean and refactor
 def load_data():
-    train_loader = DataLoader(datasets.MNIST('../storage/datasets/', 
+    train_loader = DataLoader(datasets.MNIST('/storage/datasets/', 
                                             download=False, 
                                             train=True,
                                             transform=transforms.ToTensor()),
                                 batch_size=10, 
                                 shuffle=True)
-    test_loader = DataLoader(datasets.MNIST('../storage/datasets/', 
+    test_loader = DataLoader(datasets.MNIST('/storage/datasets/', 
                                             download=False, 
                                             train=False,
                                             transform=transforms.ToTensor()),
@@ -33,7 +33,7 @@ def load_model(model_path):
 def train(model, criterion, optimizer, num_epochs, train_loader, test_loader):
     model.train()
     for epoch in range(num_epochs):
-        for images, labels in tqdm(train_loader):
+        for images, labels in train_loader:
             # images, labels = images.to(device), labels.float().unsqueeze(1).to(device)
             
             optimizer.zero_grad()
