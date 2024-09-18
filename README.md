@@ -2,6 +2,8 @@
 
 **ModelStack** is a backend framework designed for creating, training, and deploying PyTorch neural networks. It provides a simple API for building and managing custom models, *currently* focused on image classification tasks using the MNIST dataset. Users can create models, configure training parameters such as learning rate and epochs, and submit jobs for model training, all through API endpoints.
 
+![](./docs/assets/SystemDiagram.drawio.svg)
+
 The framework is containerized using Docker, making it easy to set up and use. The MNIST dataset and user-created models are stored locally, and the system allows users to upload new images for prediction once the models are trained.
 
 ## Quick Start
@@ -212,6 +214,6 @@ ModelStack is an ongoing project, with the following features planned:
     - `server` API container on Google Cloud Run
     - `db` container on Google CloudSQL
     - `compute` container on Google Cloud Compute Engine
-- Simple React frontend for interacting with API
+- Simple React frontend for interacting with API in the `./client` directory
     - Dashboard with convergence metrics data visualizer
     - Simple forms to GET/POST to endpoints
