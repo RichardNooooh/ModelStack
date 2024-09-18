@@ -8,7 +8,7 @@ services:
         condition: service_healthy
         restart: true
     volumes:
-      - modelstack_storage:/storage
+      # - modelstack_storage:/storage
       - ./storage:/storage
 
 
@@ -22,7 +22,7 @@ services:
     expose:
       - 42069
     volumes:
-      - modelstack_storage:/storage
+      # - modelstack_storage:/storage
       - ./storage:/storage
 
   # https://stackoverflow.com/questions/59715622/docker-compose-and-create-db-in-postgres-on-init
@@ -35,7 +35,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: modelstack
     volumes:
-      - modelstack_database:/var/lib/postgresql/modelstack_database
+      - modelstack_database:/var/lib/postgresql/data
       - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
@@ -53,4 +53,4 @@ services:
 
 volumes:
   modelstack_database:
-  modelstack_storage:
+  # modelstack_storage:
