@@ -189,4 +189,3 @@ ModelStack is an ongoing project, with the following features planned:
 - Simple React frontend for interacting with API
     - Dashboard with convergence metrics data visualizer
     - Simple forms to GET/POST to endpoints
-

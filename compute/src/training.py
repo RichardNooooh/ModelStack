@@ -62,6 +62,7 @@ def evaluate(model, test_loader):
 
 def begin_training(job: Job):
     model = load_model(job.model_path)
+    job.updateStatus(JobStatus.RUNNING)
 
     train_loader, test_loader = load_data()
     criterion = nn.CrossEntropyLoss()
@@ -69,7 +70,7 @@ def begin_training(job: Job):
 
     evaluate(model, test_loader)
     train(model, criterion, optimizer, job.num_epochs, train_loader, test_loader)
-    evaluate(model, test_loader)
+    # evaluate(model, test_loader)
 
     model.eval()
     jit.save(model, job.model_path)
