@@ -162,15 +162,41 @@ Here is a simple example with creating, running, and using a fully connected net
 
 3. **Use Model For Inference**:
     
-    Now that the model is trained, we can begin using this model to predict the labels on new images with the `/inference/` endpoint. I hand-drew new sample images in the `./inference_examples` directory for easy testing, but any black background image of a number should work.
+    Now that the model is trained, we can begin using this model to predict the labels on new images with the `/inference/` endpoint. I hand-drew new sample images in the `./inference_examples` directory for easy testing, but any black background image of a number should work. In the cURL example below, I am uploading 3 images, where `a.png` is an image of a `1`, `h.png` is a `6`, and `d.png` is a `0`.
 
-    TODO
     ```json
-
+    curl -X 'POST' http://localhost:8000/inference/ \
+    -H 'accept: application/json' \
+    -H 'Content-Type: multipart/form-data' \
+    -F 'data={"mod_id":"0bc1d158-b5ca-40c1-9118-b5467e2554bc"}' \
+    -F 'files=@./inference_examples/a.png;type=image/png' \
+    -F 'files=@./inference_examples/h.png;type=image/png' \
+    -F 'files=@./inference_examples/d.png;type=image/png'
     ```
 
-    ```json
+    The API will return the predicted classification with the highest probability.
 
+    ```json
+    {
+        "mod_id": "0bc1d158-b5ca-40c1-9118-b5467e2554bc",
+        "results": [
+            {
+            "file_name": "a.png",
+            "classification": 1,
+            "probability": 0.9980536699295044
+            },
+            {
+            "file_name": "h.png",
+            "classification": 6,
+            "probability": 0.9753394722938538
+            },
+            {
+            "file_name": "d.png",
+            "classification": 0,
+            "probability": 0.9129588007926941
+            }
+        ]
+    }
     ```
 
 ## Planned Features
