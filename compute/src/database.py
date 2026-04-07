@@ -2,20 +2,13 @@ from sqlalchemy import Table, create_engine, URL, update
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from environment import ENV_SETTINGS
 
-class DatabaseSettings(BaseSettings):
-    model_config = SettingsConfigDict(env_file='.env', env_file_encoding='utf-8')
-    db_username: str
-    db_password: str
-    db_host: str
-
-DATABASE_SETTINGS = DatabaseSettings()
 SQLALCHEMY_URL = URL.create(
     "postgresql+psycopg2",
-    username=DATABASE_SETTINGS.db_username,
-    password=DATABASE_SETTINGS.db_password, # TODO put this into an .env file
-    host=DATABASE_SETTINGS.db_host,
+    username=ENV_SETTINGS.db_username,
+    password=ENV_SETTINGS.db_password, # TODO put this into an .env file
+    host=ENV_SETTINGS.db_host,
     database="modelstack"
 )
 
